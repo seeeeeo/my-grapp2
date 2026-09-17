@@ -492,3 +492,97 @@ with st.expander("📋 데이터 확인하기"):
         df,
         use_container_width=True
     )
+# ==================================================
+# 그래프 6. 첫 주 관객수를 점 크기로 표현한 버블 그래프
+# ==================================================
+
+st.markdown("---")
+
+st.header(
+    "그래프 6) 개봉일 스크린수와 총 관객의 관계 - 버블 그래프"
+)
+
+bubble_data = df[
+    [
+        "movieNm",
+        "genre",
+        "first_scrn",
+        "total_audi",
+        "first_week_audi"
+    ]
+].dropna(
+    subset=[
+        "movieNm",
+        "genre",
+        "first_scrn",
+        "total_audi",
+        "first_week_audi"
+    ]
+)
+
+
+fig6 = px.scatter(
+    bubble_data,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    size="first_week_audi",
+
+    # 점 크기가 너무 커지지 않도록 조절
+    size_max=50,
+
+    # 마우스를 올렸을 때 영화명 표시
+    hover_name="movieNm",
+
+    hover_data={
+        "genre": True,
+        "first_scrn": ":,.0f",
+        "total_audi": ":,.0f",
+        "first_week_audi": ":,.0f"
+    },
+
+    labels={
+        "first_scrn": "개봉일 스크린수",
+        "total_audi": "총 관객수",
+        "first_week_audi": "첫 주 관객수",
+        "genre": "장르"
+    },
+
+    title="개봉일 스크린수 × 총 관객수 × 첫 주 관객수"
+)
+
+
+fig6.update_traces(
+    marker=dict(
+        opacity=0.7
+    )
+)
+
+
+fig6.update_layout(
+    height=650,
+    xaxis_title="개봉일 스크린수",
+    yaxis_title="총 관객수",
+    legend_title="장르"
+)
+
+
+st.plotly_chart(
+    fig6,
+    use_container_width=True
+)
+
+
+# --------------------------------------------------
+# 그래프 6 설명 영역
+# --------------------------------------------------
+
+st.markdown("---")
+
+st.subheader(
+    "📝 이 그래프로 알 수 있는 것"
+)
+
+st.info(
+    "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
+)
