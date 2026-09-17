@@ -17,15 +17,16 @@ st.caption(
     "영화의 분포와 여러 데이터 사이의 관계를 살펴봅니다."
 )
 
-# 데이터 불러오기
+# 데이터 주소
 URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_movies.csv"
 
 
+# 데이터 불러오기
 @st.cache_data
 def load_data():
     df = pd.read_csv(URL)
 
-    # 장르에 여러 장르가 있으면 첫 번째 장르만 사용
+    # 여러 장르가 있으면 첫 번째 장르만 사용
     df["genre"] = (
         df["genre"]
         .fillna("기타")
@@ -35,7 +36,7 @@ def load_data():
         .str.strip()
     )
 
-    # 숫자 데이터 숫자형으로 변환
+    # 숫자 데이터 변환
     numeric_columns = [
         "first_scrn",
         "first_show",
@@ -50,12 +51,12 @@ def load_data():
     return df
 
 
-# 데이터 불러오기
 df = load_data()
 
-# -----------------------------------------
+
+# ==================================================
 # 그래프 1. 장르별 영화 편수
-# -----------------------------------------
+# ==================================================
 
 st.header("그래프 1) 장르별 영화 편수")
 
@@ -67,7 +68,7 @@ genre_count = (
 
 genre_count.columns = ["장르", "영화 편수"]
 
-fig = px.pie(
+fig1 = px.pie(
     genre_count,
     names="장르",
     values="영화 편수",
@@ -75,27 +76,71 @@ fig = px.pie(
     title="장르별 영화 편수"
 )
 
-fig.update_traces(
+fig1.update_traces(
     textinfo="percent",
-    hovertemplate="<b>%{label}</b><br>"
-                  "영화 편수: %{value}편<br>"
-                  "비율: %{percent}<extra></extra>"
+    hovertemplate=
+        "<b>%{label}</b><br>"
+        "영화 편수: %{value}편<br>"
+        "비율: %{percent}<extra></extra>"
 )
 
-fig.update_layout(
+fig1.update_layout(
     height=500,
     legend_title="장르"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig1, use_container_width=True)
 
-# 그래프로 알 수 있는 것
+
+# 그래프 1 설명 영역
 st.markdown("---")
 st.subheader("📝 이 그래프로 알 수 있는 것")
 st.info("여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요.")
 
+
+# ==================================================
+# 그래프 2. 장르별 영화 총 관객 트리맵
+# ==================================================
+
+st.markdown("---")
+st.header("그래프 2) 장르 안에 들어 있는 영화")
+
+fig2 = px.treemap(
+    df,
+    path=["genre", "movieNm"],
+    values="total_audi",
+    title="장르별 영화의 총 관객수",
+    hover_data={
+        "movieNm": False,
+        "total_audi": ":,.0f"
+    }
+)
+
+fig2.update_traces(
+    hovertemplate=
+        "<b>%{label}</b><br>"
+        "총 관객: %{value:,.0f}명"
+        "<extra></extra>"
+)
+
+fig2.update_layout(
+    height=650
+)
+
+st.plotly_chart(fig2, use_container_width=True)
+
+
+# 그래프 2 설명 영역
+st.markdown("---")
+st.subheader("📝 이 그래프로 알 수 있는 것")
+st.info("여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요.")
+
+
+# ==================================================
+# 데이터 확인
+# ==================================================
+
 st.markdown("---")
 
-# 데이터 확인
 with st.expander("📋 데이터 확인하기"):
     st.dataframe(df, use_container_width=True)
