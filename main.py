@@ -139,7 +139,6 @@ st.info(
 st.markdown("---")
 st.header("그래프 3) 총 관객수의 분포")
 
-# 결측값 제거
 audi_data = df["total_audi"].dropna()
 
 fig3 = px.histogram(
@@ -162,11 +161,7 @@ fig3.update_layout(
 st.plotly_chart(fig3, use_container_width=True)
 
 
-# ==================================================
-# 그래프 3. 자동 설명
-# ==================================================
-
-# 가장 관객이 많은 영화 찾기
+# 가장 관객이 많은 영화
 valid_movies = df[
     ["movieNm", "total_audi"]
 ].dropna(subset=["total_audi"])
@@ -176,8 +171,7 @@ max_index = valid_movies["total_audi"].idxmax()
 max_movie_name = valid_movies.loc[max_index, "movieNm"]
 max_movie_audi = int(valid_movies.loc[max_index, "total_audi"])
 
-
-# 히스토그램에서 가장 많은 영화가 몰린 구간 계산
+# 히스토그램에서 가장 많은 영화가 몰린 구간
 min_audi = audi_data.min()
 max_audi = audi_data.max()
 
@@ -185,21 +179,16 @@ bin_width = (max_audi - min_audi) / 20
 
 if bin_width > 0:
     bin_numbers = ((audi_data - min_audi) / bin_width).astype(int)
-
-    # 마지막 값이 20번 구간으로 넘어가는 것을 방지
     bin_numbers = bin_numbers.clip(upper=19)
 
     most_common_bin = bin_numbers.value_counts().idxmax()
 
     range_start = min_audi + most_common_bin * bin_width
     range_end = range_start + bin_width
-
 else:
     range_start = min_audi
     range_end = max_audi
 
-
-# 설명 문구
 st.markdown("### 📌 그래프에서 알 수 있는 것")
 
 st.write(
@@ -211,6 +200,66 @@ st.write(
 st.write(
     f"가장 관객이 많은 영화는 **{max_movie_name}**으로, "
     f"총 관객수는 **{max_movie_audi:,}명**입니다."
+)
+
+
+# ==================================================
+# 그래프 4. 개봉일 스크린수와 총 관객의 관계
+# ==================================================
+
+st.markdown("---")
+st.header("그래프 4) 개봉일 스크린수와 총 관객의 관계")
+
+scatter_data = df[
+    ["movieNm", "genre", "first_scrn", "total_audi"]
+].dropna(
+    subset=["first_scrn", "total_audi", "movieNm", "genre"]
+)
+
+fig4 = px.scatter(
+    scatter_data,
+    x="first_scrn",
+    y="total_audi",
+    color="genre",
+    hover_name="movieNm",
+    hover_data={
+        "first_scrn": ":,.0f",
+        "total_audi": ":,.0f",
+        "genre": True
+    },
+    labels={
+        "first_scrn": "개봉일 스크린수",
+        "total_audi": "총 관객수",
+        "genre": "장르"
+    },
+    title="개봉일 스크린수와 총 관객수의 관계"
+)
+
+fig4.update_traces(
+    marker=dict(size=10, opacity=0.75),
+    hovertemplate=
+        "<b>%{hovertext}</b><br>"
+        "장르: %{customdata[2]}<br>"
+        "개봉일 스크린수: %{x:,.0f}개<br>"
+        "총 관객수: %{y:,.0f}명"
+        "<extra></extra>"
+)
+
+fig4.update_layout(
+    height=650,
+    xaxis_title="개봉일 스크린수",
+    yaxis_title="총 관객수",
+    legend_title="장르"
+)
+
+st.plotly_chart(fig4, use_container_width=True)
+
+
+# 그래프 4 설명 영역
+st.markdown("---")
+st.subheader("📝 이 그래프로 알 수 있는 것")
+st.info(
+    "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
 )
 
 
