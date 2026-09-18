@@ -675,3 +675,73 @@ st.subheader(
 st.info(
     "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
 )
+# ==================================================
+# 그래프 8. 상영횟수와 총 관객수의 관계
+# ==================================================
+
+st.markdown("---")
+
+st.header("그래프 8) 상영횟수가 많은 영화일수록 총 관객수가 많을까?")
+
+show_data = df[
+    [
+        "movieNm",
+        "first_show",
+        "total_audi"
+    ]
+].dropna(
+    subset=[
+        "movieNm",
+        "first_show",
+        "total_audi"
+    ]
+)
+
+fig8 = px.scatter(
+    show_data,
+    x="first_show",
+    y="total_audi",
+    hover_name="movieNm",
+    hover_data={
+        "first_show": ":,.0f",
+        "total_audi": ":,.0f"
+    },
+    labels={
+        "first_show": "개봉일 상영횟수",
+        "total_audi": "총 관객수"
+    },
+    title="개봉일 상영횟수와 총 관객수의 관계"
+)
+
+fig8.update_traces(
+    marker=dict(
+        size=10,
+        opacity=0.7
+    ),
+    hovertemplate=
+        "<b>%{hovertext}</b><br>"
+        "개봉일 상영횟수: %{x:,.0f}회<br>"
+        "총 관객수: %{y:,.0f}명"
+        "<extra></extra>"
+)
+
+fig8.update_layout(
+    height=600,
+    xaxis_title="개봉일 상영횟수",
+    yaxis_title="총 관객수"
+)
+
+st.plotly_chart(
+    fig8,
+    use_container_width=True
+)
+
+
+# 그래프 8 설명 영역
+st.markdown("---")
+
+st.subheader("📝 이 그래프로 알 수 있는 것")
+
+st.info(
+    "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
+)
