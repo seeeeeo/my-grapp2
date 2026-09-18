@@ -586,3 +586,92 @@ st.subheader(
 st.info(
     "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
 )
+# ==================================================
+# 그래프 7. 제작 국가 → 장르 선버스트
+# ==================================================
+
+st.markdown("---")
+
+st.header(
+    "그래프 7) 제작 국가에서 장르로 내려가는 영화 분포"
+)
+
+sunburst_data = df[
+    [
+        "nation",
+        "genre"
+    ]
+].copy()
+
+# 제작 국가와 장르의 빈 값 처리
+sunburst_data["nation"] = (
+    sunburst_data["nation"]
+    .fillna("기타")
+    .astype(str)
+    .str.strip()
+)
+
+sunburst_data["genre"] = (
+    sunburst_data["genre"]
+    .fillna("기타")
+    .astype(str)
+    .str.strip()
+)
+
+# 국가 → 장르별 영화 편수 계산
+sunburst_count = (
+    sunburst_data
+    .groupby(
+        ["nation", "genre"],
+        as_index=False
+    )
+    .size()
+)
+
+sunburst_count.columns = [
+    "nation",
+    "genre",
+    "영화 편수"
+]
+
+# 선버스트 그래프
+fig7 = px.sunburst(
+    sunburst_count,
+    path=[
+        "nation",
+        "genre"
+    ],
+    values="영화 편수",
+    title="제작 국가 → 장르별 영화 편수"
+)
+
+fig7.update_traces(
+    hovertemplate=
+        "<b>%{label}</b><br>"
+        "영화 편수: %{value}편"
+        "<extra></extra>"
+)
+
+fig7.update_layout(
+    height=650
+)
+
+st.plotly_chart(
+    fig7,
+    use_container_width=True
+)
+
+
+# --------------------------------------------------
+# 그래프 7 설명 영역
+# --------------------------------------------------
+
+st.markdown("---")
+
+st.subheader(
+    "📝 이 그래프로 알 수 있는 것"
+)
+
+st.info(
+    "여기에 이 그래프를 보고 알 수 있는 내용을 한 문장으로 적어 보세요."
+)
